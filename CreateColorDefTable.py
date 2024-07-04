@@ -30,6 +30,8 @@ from .resources import *
 # Import the code for the dialog
 from .CreateColorDefTable_dialog import CreateColorDefTableDialog
 import os.path
+import xml.etree.ElementTree as ET
+
 
 
 class CreateColorDefTable:
@@ -195,6 +197,56 @@ class CreateColorDefTable:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
+
+            ifilename = self.dlg.mQgsFileWidget.filePath()
+
+            ofilename = self.dlg.mQgsFileWidget_2.filePath()
+
+
+            print(ifilename)
+
+            f = open(ofilename , 'x')
+
+            tree = ET.parse(ifilename)
+
+            root = tree.getroot()
+
+            #print(root.tag)
+
+            for pipe in root.findall('pipe'):
+                print(pipe.tag)
+                for rasterrenderer in pipe.findall('rasterrenderer'):
+
+                    print(rasterrenderer.tag)
+            
+                    for rastershader in rasterrenderer.findall('rastershader'):
+                        print(rastershader.tag)
+
+                        for colorrampshader in rastershader.findall('colorrampshader'):
+                            for item in colorrampshader.findall('item'):
+                                print(item.tag)
+                                print(item.attrib)
+                                #print(item.text)
+                                #print(item.get('value'))
+                                #print(item.get('color'))
+
+                                cl = item.get('color')
+                                vl = item.get('value')
+
+                                hr = cl[1:3]
+                                hg = cl[3:5]
+                                hb = cl[5:7]
+
+                                ir = int(hr, 16)
+                                ig = int(hg, 16)
+                                ib = int(hb, 16)
+
+                                print(str(vl) + " " +str(ir) + " " + str(ig) + " " + str(ib )) 
+
+                                f.write(str(vl) + " " +str(ir) + " " + str(ig) + " " + str(ib ) + "\n") 
+
+            f.close()
+
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            pass
+            # pass
